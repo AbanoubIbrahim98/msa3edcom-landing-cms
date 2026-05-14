@@ -14,7 +14,10 @@
                    ?? (isRtl ? "نبني منصات ويب وتطبيقات وأنظمة حكومية بمستوى المؤسسات للكويت ومنطقة الخليج." : "We build enterprise-grade web platforms, mobile apps, and government systems for Kuwait and the Gulf.");
     var metaKeys  = T(st.MetaKeywordsEn, st.MetaKeywordsAr);
     var ogImage   = !string.IsNullOrEmpty(st.OpenGraphImage) ? st.OpenGraphImage : c.HeroImageUrl;
-    var favicon   = !string.IsNullOrEmpty(st.FaviconUrl) ? st.FaviconUrl : c.FaviconUrl;
+    var brandLogo = !string.IsNullOrEmpty(c.LogoUrl) ? c.LogoUrl : "/img/msa3edcom-logo.svg";
+    var favicon   = !string.IsNullOrEmpty(st.FaviconUrl) ? st.FaviconUrl
+                  : !string.IsNullOrEmpty(c.FaviconUrl) ? c.FaviconUrl
+                  : "/img/msa3edcom-logo.svg";
     var primary   = string.IsNullOrEmpty(st.PrimaryColor)   ? "#6366F1" : st.PrimaryColor;
     var secondary = string.IsNullOrEmpty(st.SecondaryColor) ? "#A855F7" : st.SecondaryColor;
 }
@@ -34,7 +37,9 @@
     @if (!string.IsNullOrEmpty(ogImage)) { <meta property="og:image" content="@ogImage" /> }
     <meta name="twitter:card" content="summary_large_image" />
 
-    @if (!string.IsNullOrEmpty(favicon)) { <link rel="icon" href="@favicon" /> }
+    <link rel="icon" type="image/svg+xml" href="@favicon" />
+    <link rel="alternate icon" href="@favicon" />
+    <link rel="apple-touch-icon" href="@favicon" />
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
@@ -76,27 +81,8 @@
 <!-- ============== NAVBAR ============== -->
 <nav class="navbar navbar-expand-lg site-navbar" id="siteNavbar">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="#home">
-            @if (!string.IsNullOrEmpty(c.LogoUrl))
-            {
-                <img src="@c.LogoUrl" alt="msa3edcom" height="36" class="brand-img" />
-            }
-            else
-            {
-                <span class="brand-mark">
-                    <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
-                        <defs>
-                            <linearGradient id="brandGrad" x1="0" y1="0" x2="40" y2="40">
-                                <stop stop-color="@primary"/>
-                                <stop offset="1" stop-color="@secondary"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="40" height="40" rx="10" fill="url(#brandGrad)"/>
-                        <path d="M10 28V14l6 8 6-8v14M24 28V14l6 14" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </span>
-            }
-            <span class="brand-text">msa3edcom</span>
+        <a class="navbar-brand brand-link" href="#home" aria-label="msa3edcom — Home">
+            <img src="@brandLogo" alt="msa3edcom" class="brand-img" />
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -108,6 +94,7 @@
                 <li class="nav-item"><a class="nav-link" href="#about">@(isRtl ? "من نحن" : "About")</a></li>
                 <li class="nav-item"><a class="nav-link" href="#services">@(isRtl ? "خدماتنا" : "Services")</a></li>
                 <li class="nav-item"><a class="nav-link" href="#portfolio">@(isRtl ? "أعمالنا" : "Portfolio")</a></li>
+                <li class="nav-item"><a class="nav-link" href="#clients">@(isRtl ? "عملاؤنا" : "Clients")</a></li>
                 <li class="nav-item"><a class="nav-link" href="#process">@(isRtl ? "آلية العمل" : "Process")</a></li>
                 <li class="nav-item"><a class="nav-link" href="#faq">@(isRtl ? "أسئلة شائعة" : "FAQ")</a></li>
                 <li class="nav-item"><a class="nav-link" href="#contact">@(isRtl ? "تواصل" : "Contact")</a></li>
@@ -229,19 +216,49 @@
     </div>
 </header>
 
-<!-- ============== TRUSTED LOGOS (above the fold) ============== -->
+<!-- ============== CLIENTS (Trusted by) ============== -->
 @if (Model.Clients.Any())
 {
-    <section class="trusted-strip">
-        <div class="container">
-            <div class="trusted-label">@(isRtl ? "موثوق من قِبَل فرق رائدة" : "Trusted by leading teams")</div>
-            <div class="trusted-marquee">
-                <div class="trusted-track">
+    <section class="clients-section" id="clients" aria-label="@(isRtl ? "عملاؤنا" : "Our Clients")">
+        <div class="clients-bg" aria-hidden="true">
+            <div class="clients-mesh clients-mesh-1"></div>
+            <div class="clients-mesh clients-mesh-2"></div>
+        </div>
+
+        <div class="container position-relative">
+            <div class="section-header text-center">
+                <span class="section-eyebrow" data-reveal>
+                    @(isRtl ? "عملاؤنا" : "Our Clients")
+                </span>
+                <h2 class="section-title" data-reveal data-reveal-delay="100">
+                    @(isRtl ? "ثقة شركات رائدة في المنطقة." : "Trusted by leading brands across the region.")
+                </h2>
+                <p class="section-lead" data-reveal data-reveal-delay="200">
+                    @(isRtl ? "نتشرف بالعمل مع علامات تجارية بارزة في الخليج وخارجه." : "We're proud to partner with notable brands across the Gulf and beyond.")
+                </p>
+            </div>
+
+            <div class="clients-slider" data-reveal data-reveal-delay="300">
+                <div class="clients-track">
+                    @* Duplicate the list so the marquee can scroll seamlessly *@
                     @for (int loop = 0; loop < 2; loop++)
                     {
                         @foreach (var client in Model.Clients)
                         {
-                            <div class="trusted-logo"><img src="@client.LogoUrl" alt="@client.Name" loading="lazy" /></div>
+                            <div class="client-tile" aria-hidden="@(loop == 1 ? "true" : "false")">
+                                @if (!string.IsNullOrEmpty(client.WebsiteUrl) && client.WebsiteUrl != "#")
+                                {
+                                    <a href="@client.WebsiteUrl" target="_blank" rel="noopener" class="client-tile-link" title="@client.Name">
+                                        <img src="@client.LogoUrl" alt="@client.Name" loading="lazy" />
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="client-tile-link" title="@client.Name">
+                                        <img src="@client.LogoUrl" alt="@client.Name" loading="lazy" />
+                                    </span>
+                                }
+                            </div>
                         }
                     }
                 </div>
@@ -772,11 +789,9 @@
     <div class="container">
         <div class="row g-4 align-items-center">
             <div class="col-md-6">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                    @if (!string.IsNullOrEmpty(c.LogoUrl))
-                    { <img src="@c.LogoUrl" alt="msa3edcom" height="32" /> }
-                    <span class="brand-text fw-bold">msa3edcom</span>
-                </div>
+                <a class="footer-brand-link" href="#home" aria-label="msa3edcom — Home">
+                    <img src="@brandLogo" alt="msa3edcom" class="footer-brand-img" />
+                </a>
                 <p class="footer-text mb-0">@T(c.FooterTextEn, c.FooterTextAr)</p>
             </div>
             <div class="col-md-6 text-md-end">
