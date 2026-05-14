@@ -1,0 +1,157 @@
+@model List<TestimonialItem>
+@{
+    ViewData["Title"] = "Testimonials";
+}
+
+<div class="content-card mb-4">
+    <div class="d-flex align-items-center mb-3">
+        <span class="card-icon"><i class="bi bi-chat-quote"></i></span>
+        <div>
+            <h5 class="mb-0">Add Testimonial</h5>
+            <small class="text-muted">Customer quotes that appear on the public site</small>
+        </div>
+    </div>
+
+    <form asp-action="Save" method="post" enctype="multipart/form-data" class="row g-3">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="Id" value="0" />
+
+        <div class="col-md-6">
+            <label class="form-label fw-medium">Name (English)</label>
+            <input name="NameEn" class="form-control" required maxlength="120" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label fw-medium">Name (Arabic)</label>
+            <input name="NameAr" class="form-control" dir="rtl" required maxlength="120" />
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Role (EN)</label>
+            <input name="RoleEn" class="form-control" maxlength="150" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Role (AR)</label>
+            <input name="RoleAr" class="form-control" dir="rtl" maxlength="150" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Company (EN)</label>
+            <input name="CompanyEn" class="form-control" maxlength="150" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Company (AR)</label>
+            <input name="CompanyAr" class="form-control" dir="rtl" maxlength="150" />
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label fw-medium">Quote (English)</label>
+            <textarea name="QuoteEn" class="form-control" rows="3" required maxlength="1200"></textarea>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label fw-medium">Quote (Arabic)</label>
+            <textarea name="QuoteAr" class="form-control" rows="3" dir="rtl" required maxlength="1200"></textarea>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Rating</label>
+            <select name="Rating" class="form-select">
+                @for (int i = 5; i >= 1; i--) { <option value="@i">@i ★</option> }
+            </select>
+        </div>
+        <div class="col-md-5">
+            <label class="form-label fw-medium">Avatar</label>
+            <div class="input-group">
+                <input name="AvatarUrl" id="AvatarUrl" class="form-control" placeholder="/uploads/media/..." />
+                <button type="button" class="btn btn-outline-secondary" data-media-picker data-media-target="#AvatarUrl" data-media-category="general">
+                    <i class="bi bi-images"></i>
+                </button>
+            </div>
+            <input type="file" name="avatarFile" class="form-control mt-2" accept="image/*" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label fw-medium">Order</label>
+            <input name="DisplayOrder" type="number" class="form-control" min="0" value="0" />
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <div class="form-check form-switch">
+                <input type="hidden" name="IsActive" value="false" />
+                <input class="form-check-input" type="checkbox" role="switch" name="IsActive" value="true" checked />
+                <label class="form-check-label">Active</label>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <button type="submit" class="btn btn-gradient"><i class="bi bi-plus-lg"></i> Add Testimonial</button>
+        </div>
+    </form>
+</div>
+
+<div class="content-card p-0">
+    <div class="d-flex align-items-center justify-content-between p-3 border-bottom">
+        <h6 class="mb-0">All Testimonials</h6>
+        <small class="text-muted">@Model.Count total</small>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-chat-quote text-muted"></i>
+            <h6 class="mt-3">No testimonials yet</h6>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle data-table mb-0">
+                <thead>
+                    <tr>
+                        <th style="width:70px;">Photo</th>
+                        <th>Name / Role</th>
+                        <th>Quote</th>
+                        <th style="width:80px;">Rating</th>
+                        <th style="width:90px;">Order</th>
+                        <th style="width:100px;">Status</th>
+                        <th style="width:120px;" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var t in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="row-avatar">
+                                @if (!string.IsNullOrEmpty(t.AvatarUrl))
+                                { <img src="@t.AvatarUrl" alt="" /> }
+                                else
+                                { <span>@(t.NameEn.Length > 0 ? t.NameEn[0].ToString() : "?")</span> }
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-medium">@t.NameEn</div>
+                            <div class="text-muted small">@t.RoleEn @(string.IsNullOrEmpty(t.CompanyEn) ? "" : "· " + t.CompanyEn)</div>
+                        </td>
+                        <td class="text-muted small text-truncate" style="max-width:380px;">@t.QuoteEn</td>
+                        <td><span class="rating">@string.Concat(Enumerable.Repeat("★", t.Rating))</span></td>
+                        <td>@t.DisplayOrder</td>
+                        <td>
+                            <form asp-action="ToggleActive" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@t.Id" />
+                                <button class="status-pill @(t.IsActive ? "is-on" : "is-off")">
+                                    <span class="dot"></span> @(t.IsActive ? "Active" : "Hidden")
+                                </button>
+                            </form>
+                        </td>
+                        <td class="text-end">
+                            <form asp-action="Delete" method="post" class="d-inline confirm-delete" data-confirm="Delete this testimonial?">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@t.Id" />
+                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

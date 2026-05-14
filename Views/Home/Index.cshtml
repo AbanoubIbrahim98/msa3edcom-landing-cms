@@ -1,0 +1,809 @@
+@model LandingPageViewModel
+@{
+    var c        = Model.Content;
+    var st       = Model.Settings;
+    var lang     = Model.Language;
+    var isRtl    = Model.IsRtl;
+    var dir      = Model.Direction;
+
+    string T(string? en, string? ar) => isRtl ? (ar ?? en ?? "") : (en ?? ar ?? "");
+
+    var metaTitle = T(st.MetaTitleEn, st.MetaTitleAr)
+                   ?? (isRtl ? "msa3edcom — حلول البرمجيات والتحوّل الرقمي" : "msa3edcom — Enterprise Software & Digital Solutions");
+    var metaDesc  = T(st.MetaDescriptionEn, st.MetaDescriptionAr)
+                   ?? (isRtl ? "نبني منصات ويب وتطبيقات وأنظمة حكومية بمستوى المؤسسات للكويت ومنطقة الخليج." : "We build enterprise-grade web platforms, mobile apps, and government systems for Kuwait and the Gulf.");
+    var metaKeys  = T(st.MetaKeywordsEn, st.MetaKeywordsAr);
+    var ogImage   = !string.IsNullOrEmpty(st.OpenGraphImage) ? st.OpenGraphImage : c.HeroImageUrl;
+    var favicon   = !string.IsNullOrEmpty(st.FaviconUrl) ? st.FaviconUrl : c.FaviconUrl;
+    var primary   = string.IsNullOrEmpty(st.PrimaryColor)   ? "#6366F1" : st.PrimaryColor;
+    var secondary = string.IsNullOrEmpty(st.SecondaryColor) ? "#A855F7" : st.SecondaryColor;
+}
+<!DOCTYPE html>
+<html lang="@lang" dir="@dir" data-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0B1437" />
+    <title>@metaTitle</title>
+    <meta name="description" content="@metaDesc" />
+    @if (!string.IsNullOrEmpty(metaKeys)) { <meta name="keywords" content="@metaKeys" /> }
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="@metaTitle" />
+    <meta property="og:description" content="@metaDesc" />
+    @if (!string.IsNullOrEmpty(ogImage)) { <meta property="og:image" content="@ogImage" /> }
+    <meta name="twitter:card" content="summary_large_image" />
+
+    @if (!string.IsNullOrEmpty(favicon)) { <link rel="icon" href="@favicon" /> }
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        :root {
+            --brand-1: @primary;
+            --brand-2: @secondary;
+            --brand-gradient: linear-gradient(135deg, @primary 0%, @secondary 100%);
+            --brand-gradient-soft: linear-gradient(135deg, color-mix(in srgb, @primary 12%, transparent), color-mix(in srgb, @secondary 12%, transparent));
+        }
+    </style>
+
+    @if (!string.IsNullOrEmpty(st.GoogleAnalyticsCode))
+    {
+        <script async src="https://www.googletagmanager.com/gtag/js?id=@st.GoogleAnalyticsCode"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '@st.GoogleAnalyticsCode');
+        </script>
+    }
+</head>
+<body>
+
+<!-- ============== ANNOUNCEMENT BAR ============== -->
+<div class="announcement-bar">
+    <div class="container d-flex justify-content-center align-items-center gap-2">
+        <i class="bi bi-shield-check"></i>
+        <span>@(isRtl ? "شريك برمجي موثوق لعملاء القطاع الحكومي والمؤسسات في منطقة الخليج." : "Trusted software partner for government and enterprise clients across the Gulf.")</span>
+    </div>
+</div>
+
+<!-- ============== NAVBAR ============== -->
+<nav class="navbar navbar-expand-lg site-navbar" id="siteNavbar">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="#home">
+            @if (!string.IsNullOrEmpty(c.LogoUrl))
+            {
+                <img src="@c.LogoUrl" alt="msa3edcom" height="36" class="brand-img" />
+            }
+            else
+            {
+                <span class="brand-mark">
+                    <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
+                        <defs>
+                            <linearGradient id="brandGrad" x1="0" y1="0" x2="40" y2="40">
+                                <stop stop-color="@primary"/>
+                                <stop offset="1" stop-color="@secondary"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="40" height="40" rx="10" fill="url(#brandGrad)"/>
+                        <path d="M10 28V14l6 8 6-8v14M24 28V14l6 14" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+            }
+            <span class="brand-text">msa3edcom</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-list"></i>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-auto" data-scrollspy>
+                <li class="nav-item"><a class="nav-link" href="#about">@(isRtl ? "من نحن" : "About")</a></li>
+                <li class="nav-item"><a class="nav-link" href="#services">@(isRtl ? "خدماتنا" : "Services")</a></li>
+                <li class="nav-item"><a class="nav-link" href="#portfolio">@(isRtl ? "أعمالنا" : "Portfolio")</a></li>
+                <li class="nav-item"><a class="nav-link" href="#process">@(isRtl ? "آلية العمل" : "Process")</a></li>
+                <li class="nav-item"><a class="nav-link" href="#faq">@(isRtl ? "أسئلة شائعة" : "FAQ")</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contact">@(isRtl ? "تواصل" : "Contact")</a></li>
+            </ul>
+
+            <div class="nav-actions d-flex align-items-center gap-2">
+                <button class="icon-btn" id="themeToggle" aria-label="Toggle theme" type="button">
+                    <i class="bi bi-moon-stars-fill theme-icon-dark"></i>
+                    <i class="bi bi-sun-fill theme-icon-light"></i>
+                </button>
+                <form asp-controller="Home" asp-action="SetLanguage" method="post" class="m-0">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="language" value="@(isRtl ? "en" : "ar")" />
+                    <input type="hidden" name="returnUrl" value="/" />
+                    <button type="submit" class="icon-btn lang-btn">@(isRtl ? "EN" : "AR")</button>
+                </form>
+                @if (!string.IsNullOrEmpty(c.HeroPrimaryCtaUrl))
+                {
+                    <a href="@c.HeroPrimaryCtaUrl" class="btn btn-primary-gradient">
+                        @T(c.HeroPrimaryCtaTextEn ?? "Start a Project", c.HeroPrimaryCtaTextAr ?? "ابدأ مشروعك")
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ============== HERO ============== -->
+<header class="hero" id="home">
+    <div class="hero-bg" aria-hidden="true">
+        <div class="mesh mesh-1"></div>
+        <div class="mesh mesh-2"></div>
+        <div class="mesh mesh-3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <div class="container position-relative">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <span class="eyebrow" data-reveal>
+                        <span class="eyebrow-dot"></span>
+                        <span>@T(c.HeroEyebrowEn ?? "Enterprise Software Engineering", c.HeroEyebrowAr ?? "هندسة برمجيات على مستوى المؤسسات")</span>
+                    </span>
+
+                    <h1 class="hero-title" data-reveal data-reveal-delay="100">@T(c.HeroTitleEn, c.HeroTitleAr)</h1>
+                    <p class="hero-subtitle" data-reveal data-reveal-delay="200">@T(c.HeroSubtitleEn, c.HeroSubtitleAr)</p>
+
+                    <div class="hero-ctas d-flex flex-wrap gap-3" data-reveal data-reveal-delay="300">
+                        @if (!string.IsNullOrEmpty(c.HeroPrimaryCtaUrl))
+                        {
+                            <a href="@c.HeroPrimaryCtaUrl" class="btn btn-primary-gradient btn-lg">
+                                <span>@T(c.HeroPrimaryCtaTextEn ?? "Start a Project", c.HeroPrimaryCtaTextAr ?? "ابدأ مشروعك")</span>
+                                <i class="bi bi-arrow-right ms-icon"></i>
+                            </a>
+                        }
+                        <a href="@(string.IsNullOrEmpty(c.HeroSecondaryCtaUrl) ? "#about" : c.HeroSecondaryCtaUrl)" class="btn btn-ghost btn-lg">
+                            <i class="bi bi-play-circle me-icon"></i>
+                            <span>@T(c.HeroSecondaryCtaTextEn ?? "Our Work", c.HeroSecondaryCtaTextAr ?? "أعمالنا")</span>
+                        </a>
+                    </div>
+
+                    @if (Model.Stats.Any())
+                    {
+                        <div class="hero-stats" data-reveal data-reveal-delay="400">
+                            @foreach (var s in Model.Stats.Take(3))
+                            {
+                                <div class="hero-stat">
+                                    <span class="hero-stat-value" data-counter data-target="@s.Value">0</span><span class="hero-stat-suffix">@s.Suffix</span>
+                                    <span class="hero-stat-label">@T(s.LabelEn, s.LabelAr)</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="hero-visual" data-reveal data-reveal-delay="200">
+                    @if (!string.IsNullOrEmpty(c.HeroImageUrl))
+                    {
+                        <img src="@c.HeroImageUrl" alt="Hero" class="hero-image" />
+                    }
+                    else
+                    {
+                        <div class="glass-card hero-card-main">
+                            <div class="card-header-mock">
+                                <span class="dot dot-r"></span>
+                                <span class="dot dot-y"></span>
+                                <span class="dot dot-g"></span>
+                                <span class="mock-title">@(isRtl ? "لوحة العمليات" : "Operations Dashboard")</span>
+                            </div>
+                            <div class="card-body-mock">
+                                <div class="metric-row">
+                                    <div class="metric">
+                                        <span class="metric-label">@(isRtl ? "وقت التشغيل" : "Uptime")</span>
+                                        <span class="metric-value">99.98%</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="metric-label">@(isRtl ? "الطلبات" : "Requests")</span>
+                                        <span class="metric-value">2.4M</span>
+                                    </div>
+                                </div>
+                                <div class="bars-mock">
+                                    <span style="height:40%"></span>
+                                    <span style="height:65%"></span>
+                                    <span style="height:50%"></span>
+                                    <span style="height:80%"></span>
+                                    <span style="height:70%"></span>
+                                    <span style="height:90%"></span>
+                                    <span style="height:60%"></span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ============== TRUSTED LOGOS (above the fold) ============== -->
+@if (Model.Clients.Any())
+{
+    <section class="trusted-strip">
+        <div class="container">
+            <div class="trusted-label">@(isRtl ? "موثوق من قِبَل فرق رائدة" : "Trusted by leading teams")</div>
+            <div class="trusted-marquee">
+                <div class="trusted-track">
+                    @for (int loop = 0; loop < 2; loop++)
+                    {
+                        @foreach (var client in Model.Clients)
+                        {
+                            <div class="trusted-logo"><img src="@client.LogoUrl" alt="@client.Name" loading="lazy" /></div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<!-- ============== ABOUT ============== -->
+<section class="section" id="about">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="section-eyebrow" data-reveal>@(isRtl ? "من نحن" : "About Us")</span>
+                <h2 class="section-title" data-reveal data-reveal-delay="100">@T(c.AboutTitleEn, c.AboutTitleAr)</h2>
+                <p class="section-lead" data-reveal data-reveal-delay="200">@T(c.AboutTextEn, c.AboutTextAr)</p>
+
+                <div class="about-bullets" data-reveal data-reveal-delay="300">
+                    <div class="about-bullet"><i class="bi bi-check2-circle"></i> <span>@(isRtl ? "خبرة هندسية حقيقية في الإنتاج" : "Real production engineering experience")</span></div>
+                    <div class="about-bullet"><i class="bi bi-check2-circle"></i> <span>@(isRtl ? "أمن بمعايير المؤسسات والقطاع الحكومي" : "Enterprise and government-grade security")</span></div>
+                    <div class="about-bullet"><i class="bi bi-check2-circle"></i> <span>@(isRtl ? "دعم متواصل بعد الإطلاق" : "Continuous support after launch")</span></div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                @if (!string.IsNullOrEmpty(c.AboutImageUrl))
+                {
+                    <img src="@c.AboutImageUrl" alt="About" class="img-fluid rounded-4 shadow-lg" data-reveal data-reveal-delay="200" />
+                }
+                else
+                {
+                    <div class="about-visual" data-reveal data-reveal-delay="200">
+                        <div class="about-panel">
+                            <i class="bi bi-diagram-3"></i>
+                            <h4>@(isRtl ? "بنية قابلة للتوسّع" : "Scalable Architecture")</h4>
+                            <p>@(isRtl ? "أنظمة مصمّمة للنمو من آلاف إلى ملايين المستخدمين دون إعادة بناء." : "Systems designed to grow from thousands to millions of users without rewrites.")</p>
+                        </div>
+                        <div class="about-panel">
+                            <i class="bi bi-shield-check"></i>
+                            <h4>@(isRtl ? "أمن بمستوى المؤسسات" : "Enterprise Security")</h4>
+                            <p>@(isRtl ? "مصادقة، صلاحيات، تشفير وتدقيق — مهندسة منذ اليوم الأول." : "Authentication, authorization, encryption, and audit — engineered in from day one.")</p>
+                        </div>
+                        <div class="about-panel">
+                            <i class="bi bi-speedometer2"></i>
+                            <h4>@(isRtl ? "الأداء أولًا" : "Performance First")</h4>
+                            <p>@(isRtl ? "استعلامات محسّنة، طبقات تخزين مؤقت، وأداء واجهة مدروس." : "Optimized queries, caching, and front-end performance baked into every build.")</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============== STATS (full counter row) ============== -->
+@if (Model.Stats.Count > 3)
+{
+    <section class="stats-section">
+        <div class="container">
+            <div class="row g-4">
+                @foreach (var s in Model.Stats)
+                {
+                    <div class="col-6 col-md-3" data-reveal>
+                        <div class="stat-block">
+                            @if (!string.IsNullOrEmpty(s.IconClass)) { <div class="stat-block-icon"><i class="bi @s.IconClass"></i></div> }
+                            <div class="stat-block-value"><span data-counter data-target="@s.Value">0</span>@s.Suffix</div>
+                            <div class="stat-block-label">@T(s.LabelEn, s.LabelAr)</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- ============== SERVICES ============== -->
+<section class="section section-dark-accent" id="services">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-eyebrow" data-reveal>@(isRtl ? "خدماتنا" : "Our Services")</span>
+            <h2 class="section-title" data-reveal data-reveal-delay="100">
+                @T(c.ServicesTitleEn ?? "End-to-end software solutions, engineered to production standard.",
+                   c.ServicesTitleAr ?? "حلول برمجية متكاملة، مبنية وفق معايير الإنتاج الحقيقية.")
+            </h2>
+            @if (!string.IsNullOrEmpty(c.ServicesLeadEn) || !string.IsNullOrEmpty(c.ServicesLeadAr))
+            {
+                <p class="section-lead" data-reveal data-reveal-delay="200">@T(c.ServicesLeadEn, c.ServicesLeadAr)</p>
+            }
+        </div>
+
+        <div class="row g-4 mt-4">
+            @if (Model.Services.Any())
+            {
+                int i = 0;
+                foreach (var s in Model.Services)
+                {
+                    <div class="col-md-6 col-lg-4" data-reveal data-reveal-delay="@(i % 3 * 100)">
+                        <article class="service-card">
+                            <div class="service-icon">
+                                @if (!string.IsNullOrEmpty(s.IconUrl))
+                                { <img src="@s.IconUrl" alt="" /> }
+                                else
+                                { <i class="bi @(string.IsNullOrEmpty(s.IconClass) ? "bi-grid" : s.IconClass)"></i> }
+                            </div>
+                            <h3>@T(s.TitleEn, s.TitleAr)</h3>
+                            <p>@T(s.DescriptionEn, s.DescriptionAr)</p>
+                        </article>
+                    </div>
+                    i++;
+                }
+            }
+            else
+            {
+                <!-- Fallback if admin hasn't added services -->
+                <div class="col-12 text-center text-muted">
+                    <p>@(isRtl ? "أضف خدماتك من لوحة الإدارة." : "Add your services from the admin panel.")</p>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- ============== PORTFOLIO ============== -->
+@if (Model.Portfolio.Any())
+{
+    <section class="section" id="portfolio">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="section-eyebrow" data-reveal>@(isRtl ? "أعمالنا" : "Our Work")</span>
+                <h2 class="section-title" data-reveal data-reveal-delay="100">
+                    @T(c.PortfolioTitleEn ?? "Selected work from production deployments.",
+                       c.PortfolioTitleAr ?? "نماذج مختارة من أعمالنا في بيئات الإنتاج.")
+                </h2>
+                @if (!string.IsNullOrEmpty(c.PortfolioLeadEn) || !string.IsNullOrEmpty(c.PortfolioLeadAr))
+                {
+                    <p class="section-lead" data-reveal data-reveal-delay="200">@T(c.PortfolioLeadEn, c.PortfolioLeadAr)</p>
+                }
+            </div>
+
+            <div class="row g-4 mt-3">
+                @{
+                    var sortedPortfolio = Model.Portfolio.OrderByDescending(p => p.IsFeatured).ThenBy(p => p.DisplayOrder);
+                    int pi = 0;
+                }
+                @foreach (var p in sortedPortfolio)
+                {
+                    <div class="@(p.IsFeatured && pi == 0 ? "col-lg-8" : "col-md-6 col-lg-4")" data-reveal data-reveal-delay="@(pi % 3 * 100)">
+                        <article class="portfolio-card" data-bs-toggle="modal" data-bs-target="#portfolioModal-@p.Id">
+                            <div class="portfolio-thumb">
+                                @if (!string.IsNullOrEmpty(p.ThumbnailUrl))
+                                {
+                                    <img src="@p.ThumbnailUrl" alt="@T(p.TitleEn, p.TitleAr)" loading="lazy" />
+                                }
+                                else
+                                {
+                                    <div class="thumb-fallback"><i class="bi bi-image"></i></div>
+                                }
+                                @if (p.IsFeatured) { <span class="portfolio-badge"><i class="bi bi-star-fill"></i> @(isRtl ? "مميّز" : "Featured")</span> }
+                                <div class="portfolio-overlay">
+                                    <span class="portfolio-cta"><i class="bi bi-eye"></i> @(isRtl ? "عرض" : "View")</span>
+                                </div>
+                            </div>
+                            <div class="portfolio-body">
+                                <h4>@T(p.TitleEn, p.TitleAr)</h4>
+                                @if (p.TechList.Any())
+                                {
+                                    <div class="tech-chips">
+                                        @foreach (var t in p.TechList.Take(4)) { <span class="chip">@t</span> }
+                                    </div>
+                                }
+                            </div>
+                        </article>
+                    </div>
+                    pi++;
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Modals -->
+    @foreach (var p in Model.Portfolio)
+    {
+        <div class="modal fade portfolio-modal" id="portfolioModal-@p.Id" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    @if (!string.IsNullOrEmpty(p.ThumbnailUrl))
+                    {
+                        <div class="modal-hero" style="background-image:url('@p.ThumbnailUrl');"></div>
+                    }
+                    <div class="modal-body p-4">
+                        <button type="button" class="btn-close-floating" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                        <h3 class="mb-3">@T(p.TitleEn, p.TitleAr)</h3>
+                        <p class="text-muted">@T(p.DescriptionEn, p.DescriptionAr)</p>
+
+                        @if (p.TechList.Any())
+                        {
+                            <div class="tech-chips mt-3 mb-3">
+                                @foreach (var t in p.TechList) { <span class="chip">@t</span> }
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(p.ProjectUrl) && p.ProjectUrl != "#")
+                        {
+                            <a href="@p.ProjectUrl" target="_blank" class="btn btn-primary-gradient mt-2">
+                                <span>@(isRtl ? "زيارة المشروع" : "Visit Project")</span> <i class="bi bi-arrow-right ms-icon"></i>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+<!-- ============== TECH STACK ============== -->
+@if (Model.TechStack.Any())
+{
+    <section class="section section-dark-accent" id="techstack">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="section-eyebrow" data-reveal>@(isRtl ? "تقنياتنا" : "Tech Stack")</span>
+                <h2 class="section-title" data-reveal data-reveal-delay="100">
+                    @(isRtl ? "نختار التقنيات بدقة، ونستخدمها بإتقان." : "We pick tech carefully — and we use it well.")
+                </h2>
+            </div>
+
+            <div class="tech-grid mt-5" data-reveal data-reveal-delay="200">
+                @foreach (var t in Model.TechStack)
+                {
+                    <div class="tech-card">
+                        <div class="tech-card-icon">
+                            @if (!string.IsNullOrEmpty(t.IconUrl))
+                            { <img src="@t.IconUrl" alt="@t.Name" loading="lazy" /> }
+                            else
+                            { <i class="bi @(string.IsNullOrEmpty(t.IconClass) ? "bi-cpu" : t.IconClass)"></i> }
+                        </div>
+                        <div class="tech-card-name">@t.Name</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- ============== PROCESS ============== -->
+@if (Model.Process.Any())
+{
+    <section class="section" id="process">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="section-eyebrow" data-reveal>@(isRtl ? "آلية العمل" : "How We Work")</span>
+                <h2 class="section-title" data-reveal data-reveal-delay="100">
+                    @(isRtl ? "خطوات واضحة من اللقاء الأول إلى الإطلاق." : "A clear path from first call to launch.")
+                </h2>
+            </div>
+
+            <div class="row g-4 mt-3 process-grid">
+                @{ int pn = 1; }
+                @foreach (var step in Model.Process)
+                {
+                    <div class="col-md-6 col-lg-3" data-reveal data-reveal-delay="@((pn - 1) * 100)">
+                        <article class="process-card">
+                            <div class="process-step-num">@pn.ToString("00")</div>
+                            <div class="process-card-icon">
+                                <i class="bi @(string.IsNullOrEmpty(step.IconClass) ? "bi-circle" : step.IconClass)"></i>
+                            </div>
+                            <h4>@T(step.TitleEn, step.TitleAr)</h4>
+                            <p>@T(step.DescriptionEn, step.DescriptionAr)</p>
+                        </article>
+                    </div>
+                    pn++;
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- ============== TESTIMONIALS ============== -->
+@if (Model.Testimonials.Any())
+{
+    <section class="section section-dark-accent" id="testimonials">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="section-eyebrow" data-reveal>@(isRtl ? "آراء العملاء" : "What Clients Say")</span>
+                <h2 class="section-title" data-reveal data-reveal-delay="100">
+                    @(isRtl ? "نتائج حقيقية، وثقة من مؤسسات حقيقية." : "Real results from real organizations.")
+                </h2>
+            </div>
+
+            <div class="row g-4 mt-3">
+                @{ int ti = 0; }
+                @foreach (var t in Model.Testimonials)
+                {
+                    <div class="col-md-6 col-lg-4" data-reveal data-reveal-delay="@(ti % 3 * 100)">
+                        <article class="testimonial-card">
+                            <div class="testimonial-rating">
+                                @for (int i = 0; i < t.Rating; i++) { <i class="bi bi-star-fill"></i> }
+                            </div>
+                            <blockquote class="testimonial-quote">"@T(t.QuoteEn, t.QuoteAr)"</blockquote>
+                            <div class="testimonial-author">
+                                @if (!string.IsNullOrEmpty(t.AvatarUrl))
+                                { <img src="@t.AvatarUrl" alt="@T(t.NameEn, t.NameAr)" /> }
+                                else
+                                { <div class="avatar-fallback">@(T(t.NameEn, t.NameAr).FirstOrDefault())</div> }
+                                <div>
+                                    <div class="testimonial-name">@T(t.NameEn, t.NameAr)</div>
+                                    <div class="testimonial-role">@T(t.RoleEn, t.RoleAr)@(string.IsNullOrEmpty(T(t.CompanyEn, t.CompanyAr)) ? "" : " · " + T(t.CompanyEn, t.CompanyAr))</div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    ti++;
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- ============== FAQ ============== -->
+@if (Model.Faqs.Any())
+{
+    <section class="section" id="faq">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-5">
+                    <span class="section-eyebrow" data-reveal>@(isRtl ? "أسئلة شائعة" : "FAQ")</span>
+                    <h2 class="section-title" data-reveal data-reveal-delay="100">
+                        @(isRtl ? "إجابات سريعة على الأسئلة الأكثر شيوعًا." : "Quick answers to common questions.")
+                    </h2>
+                    <p class="section-lead" data-reveal data-reveal-delay="200">
+                        @(isRtl ? "لا تجد إجابتك؟ راسلنا مباشرة — نرد خلال ساعات قليلة." : "Can't find your answer? Reach out — we usually reply within a few hours.")
+                    </p>
+                </div>
+                <div class="col-lg-7">
+                    <div class="faq-list" data-reveal data-reveal-delay="200">
+                        @foreach (var (f, idx) in Model.Faqs.Select((x, i) => (x, i)))
+                        {
+                            <details class="faq-item" @(idx == 0 ? "open" : "")>
+                                <summary>
+                                    <span>@T(f.QuestionEn, f.QuestionAr)</span>
+                                    <i class="bi bi-plus faq-toggle"></i>
+                                </summary>
+                                <div class="faq-answer"><p>@T(f.AnswerEn, f.AnswerAr)</p></div>
+                            </details>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<!-- ============== CTA BANNER ============== -->
+@if (!string.IsNullOrEmpty(c.CtaBannerTitleEn) || !string.IsNullOrEmpty(c.CtaBannerTitleAr))
+{
+    <section class="cta-banner-section">
+        <div class="container">
+            <div class="cta-banner @(string.IsNullOrEmpty(c.CtaBannerImageUrl) ? "" : "has-bg")" @(string.IsNullOrEmpty(c.CtaBannerImageUrl) ? "" : $"style=\"background-image: linear-gradient(135deg, rgba(99,102,241,0.85), rgba(168,85,247,0.85)), url('{c.CtaBannerImageUrl}')\"")>
+                <div class="cta-banner-inner">
+                    <h2 data-reveal>@T(c.CtaBannerTitleEn, c.CtaBannerTitleAr)</h2>
+                    <p data-reveal data-reveal-delay="100">@T(c.CtaBannerSubtitleEn, c.CtaBannerSubtitleAr)</p>
+                    @if (!string.IsNullOrEmpty(c.CtaBannerButtonUrl))
+                    {
+                        <a href="@c.CtaBannerButtonUrl" class="btn btn-light btn-lg cta-banner-btn" data-reveal data-reveal-delay="200">
+                            <span>@T(c.CtaBannerButtonTextEn, c.CtaBannerButtonTextAr)</span>
+                            <i class="bi bi-arrow-right ms-icon"></i>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<!-- ============== CONTACT + LEAD FORM ============== -->
+<section class="section section-dark-accent" id="contact">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-eyebrow" data-reveal>@(isRtl ? "تواصل معنا" : "Get in Touch")</span>
+            <h2 class="section-title" data-reveal data-reveal-delay="100">
+                @(isRtl ? "لنتحدث عن مشروعك القادم." : "Let's talk about your next project.")
+            </h2>
+            <p class="section-lead" data-reveal data-reveal-delay="200">
+                @(isRtl ? "أرسل تفاصيل مشروعك وسنعود إليك خلال 48 ساعة." : "Send us your project details and we'll get back to you within 48 hours.")
+            </p>
+        </div>
+
+        <div class="row g-4 mt-3 justify-content-center">
+            @if (!string.IsNullOrEmpty(c.Phone))
+            {
+                <div class="col-md-6 col-lg-4" data-reveal>
+                    <a href="tel:@c.Phone" class="contact-card">
+                        <div class="contact-icon"><i class="bi bi-telephone-fill"></i></div>
+                        <h4>@(isRtl ? "اتصل بنا" : "Call Us")</h4>
+                        <p>@c.Phone</p>
+                    </a>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(c.Email))
+            {
+                <div class="col-md-6 col-lg-4" data-reveal data-reveal-delay="100">
+                    <a href="mailto:@c.Email" class="contact-card">
+                        <div class="contact-icon"><i class="bi bi-envelope-fill"></i></div>
+                        <h4>@(isRtl ? "راسلنا" : "Email Us")</h4>
+                        <p>@c.Email</p>
+                    </a>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(c.WhatsApp))
+            {
+                <div class="col-md-6 col-lg-4" data-reveal data-reveal-delay="200">
+                    <a href="https://wa.me/@(c.WhatsApp.Replace("+", "").Replace(" ", ""))" target="_blank" rel="noopener" class="contact-card">
+                        <div class="contact-icon contact-icon-wa"><i class="bi bi-whatsapp"></i></div>
+                        <h4>WhatsApp</h4>
+                        <p>@c.WhatsApp</p>
+                    </a>
+                </div>
+            }
+        </div>
+
+        <!-- ===== Lead request form ===== -->
+        <div class="lead-form-wrap mt-5" data-reveal>
+            <div class="lead-form-card">
+                <div class="lead-form-header">
+                    <span class="eyebrow-mini">
+                        <i class="bi bi-send-check"></i>
+                        @(isRtl ? "طلب مشروع" : "Project Request")
+                    </span>
+                    <h3 class="lead-form-title">
+                        @(isRtl ? "أخبرنا عن مشروعك" : "Tell us about your project")
+                    </h3>
+                    <p class="lead-form-sub">
+                        @(isRtl ? "املأ النموذج وسنرد عليك بنطاق واضح وجدول زمني وتقدير ميزانية." : "Fill in the form — we'll come back with scope, timeline, and a budget estimate.")
+                    </p>
+                </div>
+
+                <form id="leadForm" asp-controller="Home" asp-action="SubmitLead" method="post" enctype="multipart/form-data" novalidate>
+                    @Html.AntiForgeryToken()
+
+                    <div id="leadFormAlert" class="lead-form-alert" role="status" aria-live="polite"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="lead-label">@(isRtl ? "الاسم الكامل" : "Full Name") <span class="req">*</span></label>
+                            <input type="text" name="FullName" class="form-control lead-input" maxlength="150" required
+                                   placeholder="@(isRtl ? "اسمك الكامل" : "Your full name")" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="lead-label">@(isRtl ? "البريد الإلكتروني" : "Email") <span class="req">*</span></label>
+                            <input type="email" name="Email" class="form-control lead-input" maxlength="200" required
+                                   placeholder="you@@example.com" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="lead-label">@(isRtl ? "رقم الهاتف" : "Phone Number")</label>
+                            <input type="tel" name="PhoneNumber" class="form-control lead-input" maxlength="40"
+                                   placeholder="+965 XXXX XXXX" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="lead-label">@(isRtl ? "رقم واتساب" : "WhatsApp Number")</label>
+                            <input type="tel" name="WhatsAppNumber" class="form-control lead-input" maxlength="40"
+                                   placeholder="+965 XXXX XXXX" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="lead-label">@(isRtl ? "اسم الشركة" : "Company Name")</label>
+                            <input type="text" name="CompanyName" class="form-control lead-input" maxlength="150"
+                                   placeholder="@(isRtl ? "اختياري" : "Optional")" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="lead-label">@(isRtl ? "نوع الخدمة" : "Service Needed")</label>
+                            <select name="ServiceType" class="form-select lead-input">
+                                <option value="">@(isRtl ? "اختر..." : "Choose...")</option>
+                                @foreach (var (value, en, ar) in Msa3edcomAdmin.Models.LeadServiceTypes.All)
+                                {
+                                    <option value="@value">@(isRtl ? ar : en)</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="lead-label">@(isRtl ? "الميزانية التقديرية" : "Budget")</label>
+                            <select name="Budget" class="form-select lead-input">
+                                <option value="">@(isRtl ? "اختياري" : "Optional")</option>
+                                @foreach (var (value, en, ar) in Msa3edcomAdmin.Models.LeadBudgets.All)
+                                {
+                                    <option value="@value">@(isRtl ? ar : en)</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="lead-label">@(isRtl ? "مرفق" : "Attachment")</label>
+                            <label class="lead-file-pick">
+                                <input type="file" name="attachment" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
+                                <span class="lead-file-content">
+                                    <i class="bi bi-paperclip"></i>
+                                    <span class="lead-file-label">@(isRtl ? "PDF · DOCX · PNG · JPG (حتى 8 ميجا)" : "PDF · DOCX · PNG · JPG (up to 8 MB)")</span>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="lead-label">@(isRtl ? "تفاصيل المشروع" : "Project Details") <span class="req">*</span></label>
+                            <textarea name="Message" class="form-control lead-input" rows="5" maxlength="4000" required
+                                      placeholder="@(isRtl ? "ما الذي تريد بناءه؟ ما المشكلة التي يحلّها؟" : "What are you building? What problem does it solve?")"></textarea>
+                        </div>
+
+                        <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <div class="lead-form-trust">
+                                <i class="bi bi-shield-lock"></i>
+                                <span>@(isRtl ? "لن نشارك معلوماتك. الردّ خلال 48 ساعة." : "We don't share your info. Reply within 48 hours.")</span>
+                            </div>
+                            <button type="submit" class="btn btn-primary-gradient btn-lg lead-submit">
+                                <span class="lead-submit-label">@(isRtl ? "إرسال الطلب" : "Send Request")</span>
+                                <i class="bi bi-arrow-right ms-icon lead-submit-icon"></i>
+                                <span class="lead-spinner" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer class="site-footer">
+    <div class="container">
+        <div class="row g-4 align-items-center">
+            <div class="col-md-6">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    @if (!string.IsNullOrEmpty(c.LogoUrl))
+                    { <img src="@c.LogoUrl" alt="msa3edcom" height="32" /> }
+                    <span class="brand-text fw-bold">msa3edcom</span>
+                </div>
+                <p class="footer-text mb-0">@T(c.FooterTextEn, c.FooterTextAr)</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="footer-socials">
+                    @if (!string.IsNullOrEmpty(c.LinkedInUrl) && c.LinkedInUrl != "#")
+                    { <a href="@c.LinkedInUrl" aria-label="LinkedIn" target="_blank" rel="noopener"><i class="bi bi-linkedin"></i></a> }
+                    @if (!string.IsNullOrEmpty(c.TwitterUrl) && c.TwitterUrl != "#")
+                    { <a href="@c.TwitterUrl" aria-label="X" target="_blank" rel="noopener"><i class="bi bi-twitter-x"></i></a> }
+                    @if (!string.IsNullOrEmpty(c.GitHubUrl) && c.GitHubUrl != "#")
+                    { <a href="@c.GitHubUrl" aria-label="GitHub" target="_blank" rel="noopener"><i class="bi bi-github"></i></a> }
+                    @if (!string.IsNullOrEmpty(c.InstagramUrl) && c.InstagramUrl != "#")
+                    { <a href="@c.InstagramUrl" aria-label="Instagram" target="_blank" rel="noopener"><i class="bi bi-instagram"></i></a> }
+                    @if (!string.IsNullOrEmpty(c.FacebookUrl) && c.FacebookUrl != "#")
+                    { <a href="@c.FacebookUrl" aria-label="Facebook" target="_blank" rel="noopener"><i class="bi bi-facebook"></i></a> }
+                    @if (!string.IsNullOrEmpty(c.WhatsApp))
+                    { <a href="https://wa.me/@(c.WhatsApp.Replace("+", "").Replace(" ", ""))" aria-label="WhatsApp" target="_blank" rel="noopener"><i class="bi bi-whatsapp"></i></a> }
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top" type="button">
+    <i class="bi bi-arrow-up"></i>
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>

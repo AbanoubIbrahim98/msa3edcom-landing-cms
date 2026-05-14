@@ -1,0 +1,230 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    var lastUpdated      = ViewBag.ContentLastUpdated as DateTime?;
+    var latestMedia      = ViewBag.LatestMedia      as List<Msa3edcomAdmin.Models.MediaItem>      ?? new();
+    var latestPortfolio  = ViewBag.LatestPortfolio  as List<Msa3edcomAdmin.Models.PortfolioItem>  ?? new();
+    var latestLeads      = ViewBag.LatestLeads      as List<Msa3edcomAdmin.Models.LeadRequest>   ?? new();
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <a asp-controller="Leads" asp-action="Index" class="stat-card stat-card-link">
+            <div class="stat-icon stat-icon-primary"><i class="bi bi-inbox"></i></div>
+            <div>
+                <div class="stat-label">Total Leads</div>
+                <div class="stat-value">@ViewBag.TotalLeads</div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-controller="Leads" asp-action="Index" asp-route-status="New" class="stat-card stat-card-link">
+            <div class="stat-icon stat-icon-success"><i class="bi bi-stars"></i></div>
+            <div>
+                <div class="stat-label">New Leads</div>
+                <div class="stat-value">@ViewBag.NewLeads</div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-controller="Leads" asp-action="Index" class="stat-card stat-card-link">
+            <div class="stat-icon stat-icon-warning"><i class="bi bi-envelope-paper"></i></div>
+            <div>
+                <div class="stat-label">Unread</div>
+                <div class="stat-value">@ViewBag.UnreadLeads</div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-primary"><i class="bi bi-grid-3x3-gap"></i></div>
+            <div>
+                <div class="stat-label">Services</div>
+                <div class="stat-value">@ViewBag.ServiceCount</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-info"><i class="bi bi-collection"></i></div>
+            <div>
+                <div class="stat-label">Portfolio</div>
+                <div class="stat-value">@ViewBag.PortfolioCount</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-success"><i class="bi bi-building"></i></div>
+            <div>
+                <div class="stat-label">Clients</div>
+                <div class="stat-value">@ViewBag.ClientCount</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-warning"><i class="bi bi-images"></i></div>
+            <div>
+                <div class="stat-label">Media Files</div>
+                <div class="stat-value">@ViewBag.MediaCount</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-lg-8">
+        <div class="content-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0"><i class="bi bi-lightning-charge-fill text-warning me-1"></i> Quick Actions</h5>
+            </div>
+            <div class="quick-actions">
+                <a asp-action="Settings" class="quick-action">
+                    <i class="bi bi-gear"></i><span>Site Content</span>
+                </a>
+                <a asp-controller="Services" asp-action="Create" class="quick-action">
+                    <i class="bi bi-plus-square"></i><span>New Service</span>
+                </a>
+                <a asp-controller="Portfolio" asp-action="Create" class="quick-action">
+                    <i class="bi bi-plus-circle"></i><span>New Project</span>
+                </a>
+                <a asp-controller="Media" asp-action="Index" class="quick-action">
+                    <i class="bi bi-cloud-upload"></i><span>Upload Media</span>
+                </a>
+                <a asp-controller="SiteSettings" asp-action="Index" class="quick-action">
+                    <i class="bi bi-sliders"></i><span>SEO &amp; Branding</span>
+                </a>
+                <a asp-controller="Home" asp-action="Index" target="_blank" class="quick-action">
+                    <i class="bi bi-box-arrow-up-right"></i><span>View Site</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="content-card h-100">
+            <h5 class="mb-3"><i class="bi bi-clock-history text-primary me-1"></i> System</h5>
+            <ul class="info-list">
+                <li><span>Last content update</span><strong>@(lastUpdated.HasValue ? lastUpdated.Value.ToString("MMM dd, yyyy") : "Never")</strong></li>
+                <li><span>Testimonials</span><strong>@ViewBag.TestimonialCount</strong></li>
+                <li><span>FAQ items</span><strong>@ViewBag.FaqCount</strong></li>
+                <li><span>Languages</span><strong>EN · AR (RTL)</strong></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-12">
+        <div class="content-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0"><i class="bi bi-inbox text-primary me-1"></i> Latest Lead Requests</h5>
+                <a asp-controller="Leads" asp-action="Index" class="small text-decoration-none">View all <i class="bi bi-arrow-right"></i></a>
+            </div>
+
+            @if (!latestLeads.Any())
+            {
+                <div class="empty-state-sm">
+                    <i class="bi bi-inbox text-muted"></i>
+                    <p class="text-muted mb-0">No leads yet — submissions from the public form will land here.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle leads-table mb-0">
+                        <tbody>
+                        @foreach (var l in latestLeads)
+                        {
+                            <tr class="@(l.IsRead ? "" : "lead-unread")">
+                                <td style="width:24px;"><span class="lead-unread-dot"></span></td>
+                                <td>
+                                    <div class="fw-medium">@l.FullName</div>
+                                    <div class="text-muted small">@l.Email</div>
+                                </td>
+                                <td class="text-muted small">@(l.ServiceType ?? "—")</td>
+                                <td><span class="lead-status-badge @Msa3edcomAdmin.Models.LeadStatus.CssClass(l.Status)">@l.Status</span></td>
+                                <td class="text-muted small text-end">@l.CreatedAt.ToString("MMM dd, HH:mm")</td>
+                                <td class="text-end" style="width:80px;">
+                                    <a asp-controller="Leads" asp-action="Index" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="content-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0"><i class="bi bi-collection text-primary me-1"></i> Latest Projects</h5>
+                <a asp-controller="Portfolio" asp-action="Index" class="small text-decoration-none">View all <i class="bi bi-arrow-right"></i></a>
+            </div>
+
+            @if (!latestPortfolio.Any())
+            {
+                <div class="empty-state-sm">
+                    <i class="bi bi-collection text-muted"></i>
+                    <p class="text-muted mb-0">No projects yet.</p>
+                </div>
+            }
+            else
+            {
+                <div class="recent-list">
+                    @foreach (var p in latestPortfolio)
+                    {
+                        <a asp-controller="Portfolio" asp-action="Edit" asp-route-id="@p.Id" class="recent-row">
+                            <div class="recent-thumb">
+                                @if (!string.IsNullOrEmpty(p.ThumbnailUrl))
+                                { <img src="@p.ThumbnailUrl" alt="" /> }
+                                else
+                                { <i class="bi bi-image"></i> }
+                            </div>
+                            <div class="recent-body">
+                                <div class="fw-medium">@p.TitleEn</div>
+                                <div class="text-muted small">@p.CreatedAt.ToString("MMM dd, yyyy")</div>
+                            </div>
+                            @if (p.IsFeatured) { <span class="badge-featured"><i class="bi bi-star-fill"></i></span> }
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="content-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0"><i class="bi bi-images text-primary me-1"></i> Latest Media</h5>
+                <a asp-controller="Media" asp-action="Index" class="small text-decoration-none">View all <i class="bi bi-arrow-right"></i></a>
+            </div>
+
+            @if (!latestMedia.Any())
+            {
+                <div class="empty-state-sm">
+                    <i class="bi bi-images text-muted"></i>
+                    <p class="text-muted mb-0">No media yet.</p>
+                </div>
+            }
+            else
+            {
+                <div class="latest-media-grid">
+                    @foreach (var m in latestMedia)
+                    {
+                        <a href="@m.FileUrl" target="_blank" class="latest-media-tile" title="@m.FileName">
+                            <img src="@m.FileUrl" alt="@m.AltText" loading="lazy" />
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

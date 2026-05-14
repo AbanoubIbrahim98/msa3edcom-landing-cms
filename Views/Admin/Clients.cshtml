@@ -1,0 +1,111 @@
+@model List<ClientItem>
+@{
+    ViewData["Title"] = "Clients";
+}
+
+<div class="content-card mb-4">
+    <div class="d-flex align-items-center mb-3">
+        <span class="card-icon"><i class="bi bi-plus-circle"></i></span>
+        <div>
+            <h5 class="mb-0">Add New Client</h5>
+            <small class="text-muted">Upload a logo or pick from the Media Library</small>
+        </div>
+    </div>
+
+    <form asp-action="AddClient" method="post" enctype="multipart/form-data" class="row g-3">
+        @Html.AntiForgeryToken()
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Client Name *</label>
+            <input name="name" class="form-control" required maxlength="150" placeholder="Acme Corporation" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Website</label>
+            <input name="websiteUrl" class="form-control" type="url" placeholder="https://example.com" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Logo URL</label>
+            <div class="input-group">
+                <input id="ClientLogoUrl" name="logoUrl" class="form-control" placeholder="/uploads/media/clients/..." />
+                <button type="button" class="btn btn-outline-secondary" data-media-picker data-media-target="#ClientLogoUrl" data-media-category="clients">
+                    <i class="bi bi-images"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label fw-medium">Or upload</label>
+            <input name="logoFile" type="file" class="form-control" accept="image/*" />
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="submit" class="btn btn-gradient w-100">
+                <i class="bi bi-plus-lg"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="content-card p-0">
+    <div class="d-flex align-items-center justify-content-between p-3 border-bottom">
+        <div class="d-flex align-items-center">
+            <span class="card-icon"><i class="bi bi-building"></i></span>
+            <div>
+                <h5 class="mb-0">All Clients</h5>
+                <small class="text-muted">@Model.Count total</small>
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-building text-muted"></i>
+            <h6 class="mt-3">No clients yet</h6>
+            <p class="text-muted small mb-0">Add your first client logo using the form above.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle data-table mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 90px;">Logo</th>
+                        <th>Name</th>
+                        <th>Website</th>
+                        <th style="width: 100px;">Order</th>
+                        <th style="width: 100px;" class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var client in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="logo-cell"><img src="@client.LogoUrl" alt="@client.Name" /></div>
+                            </td>
+                            <td class="fw-medium">@client.Name</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(client.WebsiteUrl))
+                                {
+                                    <a href="@client.WebsiteUrl" target="_blank" rel="noopener" class="text-truncate d-inline-block" style="max-width:300px;">
+                                        @client.WebsiteUrl <i class="bi bi-box-arrow-up-right small"></i>
+                                    </a>
+                                }
+                                else { <span class="text-muted small">—</span> }
+                            </td>
+                            <td><span class="badge bg-light text-dark">@client.DisplayOrder</span></td>
+                            <td class="text-end">
+                                <form asp-action="DeleteClient" method="post" class="d-inline confirm-delete" data-confirm="Delete @client.Name?">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@client.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

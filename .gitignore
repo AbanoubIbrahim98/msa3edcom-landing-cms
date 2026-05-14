@@ -1,0 +1,28 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# User secrets
+**/secrets.json
+
+# Uploaded files (keep folders, ignore content)
+wwwroot/uploads/**/*
+!wwwroot/uploads/**/.gitkeep
+
+# Database files (LocalDB)
+*.mdf
+*.ldf
+*.bak

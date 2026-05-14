@@ -1,0 +1,175 @@
+@model List<MediaItem>
+@{
+    ViewData["Title"] = "Media Library";
+    var category   = ViewBag.Category as string;
+    var query      = ViewBag.Query as string;
+    var page       = (int)ViewBag.Page;
+    var totalPages = (int)ViewBag.TotalPages;
+    var total      = (int)ViewBag.Total;
+    var categories = ViewBag.Categories as string[] ?? Array.Empty<string>();
+}
+
+<!-- ===== Upload card ===== -->
+<div class="content-card mb-4">
+    <div class="d-flex align-items-center mb-3">
+        <span class="card-icon"><i class="bi bi-cloud-upload"></i></span>
+        <div>
+            <h5 class="mb-0">Upload Media</h5>
+            <small class="text-muted">JPG · PNG · WebP · SVG · max 4 MB each</small>
+        </div>
+    </div>
+
+    <form id="mediaUploadForm" asp-controller="Media" asp-action="Upload" method="post" enctype="multipart/form-data" class="row g-3">
+        @Html.AntiForgeryToken()
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Category</label>
+            <select name="category" class="form-select">
+                @foreach (var c in categories)
+                {
+                    <option value="@c" selected="@(c == category)">@c</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label fw-medium">Alt text (optional)</label>
+            <input name="altText" class="form-control" placeholder="Describe the image…" />
+        </div>
+        <div class="col-md-5">
+            <label class="form-label fw-medium">Files</label>
+            <div class="dropzone" id="mediaDropzone">
+                <input type="file" name="files" id="mediaFileInput" accept="image/png,image/jpeg,image/webp,image/svg+xml" multiple hidden />
+                <i class="bi bi-cloud-arrow-up"></i>
+                <div class="dropzone-hint">Drag &amp; drop or <button type="button" id="mediaBrowseBtn" class="btn-link-plain">browse</button></div>
+                <div id="mediaSelectedList" class="dropzone-list"></div>
+            </div>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-gradient">
+                <i class="bi bi-upload"></i> Upload
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- ===== Filters ===== -->
+<div class="content-card mb-3">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label fw-medium small">Search</label>
+            <input name="q" value="@query" class="form-control" placeholder="filename or alt text…" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-medium small">Category</label>
+            <select name="category" class="form-select">
+                <option value="">All</option>
+                @foreach (var c in categories)
+                {
+                    <option value="@c" selected="@(c == category)">@c</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-outline-primary w-100">
+                <i class="bi bi-funnel"></i> Filter
+            </button>
+        </div>
+        <div class="col-md-3 text-md-end">
+            <span class="text-muted small">@total file(s)</span>
+        </div>
+    </form>
+</div>
+
+<!-- ===== Grid ===== -->
+@if (!Model.Any())
+{
+    <div class="empty-state content-card">
+        <i class="bi bi-images text-muted"></i>
+        <h6 class="mt-3">No media yet</h6>
+        <p class="text-muted small mb-0">Upload some images using the form above.</p>
+    </div>
+}
+else
+{
+    <div class="media-grid">
+        @foreach (var m in Model)
+        {
+            <div class="media-tile">
+                <div class="media-tile-img">
+                    <img src="@m.FileUrl" alt="@m.AltText" loading="lazy" />
+                </div>
+                <div class="media-tile-meta">
+                    <div class="media-tile-name" title="@m.FileName">@m.FileName</div>
+                    <div class="media-tile-cat">@m.Category · @m.FileType</div>
+                </div>
+                <div class="media-tile-actions">
+                    <button type="button" class="btn btn-sm btn-outline-secondary copy-url" data-url="@m.FileUrl" title="Copy URL">
+                        <i class="bi bi-link-45deg"></i>
+                    </button>
+                    <a href="@m.FileUrl" target="_blank" class="btn btn-sm btn-outline-secondary" title="Open">
+                        <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                    <form asp-action="Delete" method="post" class="d-inline confirm-delete" data-confirm="Delete @m.FileName?">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@m.Id" />
+                        <input type="hidden" name="category" value="@category" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (totalPages > 1)
+    {
+        <nav class="pager mt-4">
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <a class="pager-link @(i == page ? "active" : "")"
+                   href="?page=@i&category=@category&q=@Uri.EscapeDataString(query ?? string.Empty)">@i</a>
+            }
+        </nav>
+    }
+}
+
+@section Scripts {
+    <script>
+        // Dropzone behaviour
+        (function () {
+            const dz = document.getElementById('mediaDropzone');
+            const input = document.getElementById('mediaFileInput');
+            const list = document.getElementById('mediaSelectedList');
+            const browse = document.getElementById('mediaBrowseBtn');
+
+            function renderList(files) {
+                list.innerHTML = '';
+                Array.from(files).forEach(f => {
+                    const chip = document.createElement('span');
+                    chip.className = 'chip';
+                    chip.innerHTML = '<i class="bi bi-file-earmark-image"></i> ' + f.name;
+                    list.appendChild(chip);
+                });
+            }
+
+            browse.addEventListener('click', () => input.click());
+            dz.addEventListener('click', e => {
+                if (e.target === dz) input.click();
+            });
+            input.addEventListener('change', e => renderList(e.target.files));
+
+            ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => {
+                e.preventDefault(); dz.classList.add('is-drag');
+            }));
+            ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => {
+                e.preventDefault(); dz.classList.remove('is-drag');
+            }));
+            dz.addEventListener('drop', e => {
+                if (e.dataTransfer?.files?.length) {
+                    input.files = e.dataTransfer.files;
+                    renderList(input.files);
+                }
+            });
+        })();
+    </script>
+}

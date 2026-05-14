@@ -1,0 +1,90 @@
+@model List<ProcessStep>
+@{
+    ViewData["Title"] = "Process / Workflow";
+}
+
+<div class="content-card mb-4">
+    <div class="d-flex align-items-center mb-3">
+        <span class="card-icon"><i class="bi bi-diagram-3"></i></span>
+        <div>
+            <h5 class="mb-0">Add Process Step</h5>
+            <small class="text-muted">How you take a project from start to launch</small>
+        </div>
+    </div>
+
+    <form asp-action="Save" method="post" class="row g-3">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="Id" value="0" />
+
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Title (EN)</label>
+            <input name="TitleEn" class="form-control" required maxlength="120" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Title (AR)</label>
+            <input name="TitleAr" class="form-control" dir="rtl" required maxlength="120" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label fw-medium">Description (EN)</label>
+            <input name="DescriptionEn" class="form-control" maxlength="500" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label fw-medium">Icon</label>
+            <input name="IconClass" class="form-control" placeholder="bi-search" />
+        </div>
+        <div class="col-md-12">
+            <label class="form-label fw-medium">Description (AR)</label>
+            <input name="DescriptionAr" class="form-control" dir="rtl" maxlength="500" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label fw-medium">Order</label>
+            <input name="DisplayOrder" type="number" class="form-control" min="0" value="0" />
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <div class="form-check form-switch">
+                <input type="hidden" name="IsActive" value="false" />
+                <input class="form-check-input" type="checkbox" role="switch" name="IsActive" value="true" checked />
+                <label class="form-check-label">Active</label>
+            </div>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-gradient"><i class="bi bi-plus-lg"></i> Add Step</button>
+        </div>
+    </form>
+</div>
+
+<div class="content-card">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h6 class="mb-0">All Steps</h6>
+        <small class="text-muted">@Model.Count total</small>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state"><i class="bi bi-diagram-3 text-muted"></i><h6 class="mt-3">No process steps yet</h6></div>
+    }
+    else
+    {
+        <div class="process-admin">
+            @foreach (var p in Model)
+            {
+                <div class="process-row">
+                    <div class="process-num">#@p.DisplayOrder</div>
+                    <div class="process-icon"><i class="bi @(p.IconClass ?? "bi-circle")"></i></div>
+                    <div class="process-body">
+                        <div class="fw-medium">@p.TitleEn <span class="text-muted small">/ <span dir="rtl">@p.TitleAr</span></span></div>
+                        <div class="text-muted small">@p.DescriptionEn</div>
+                    </div>
+                    <div class="process-actions">
+                        @if (!p.IsActive) { <span class="status-pill is-off"><span class="dot"></span> Hidden</span> }
+                        <form asp-action="Delete" method="post" class="confirm-delete" data-confirm="Delete this step?">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@p.Id" />
+                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

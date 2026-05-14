@@ -1,0 +1,337 @@
+@model List<LeadRequest>
+@{
+    ViewData["Title"] = "Lead Requests";
+    var status      = ViewBag.Status as string;
+    var query       = ViewBag.Query as string;
+    var page        = (int)ViewBag.Page;
+    var totalPages  = (int)ViewBag.TotalPages;
+    var total       = (int)ViewBag.Total;
+    var statuses    = ViewBag.StatusOptions as string[] ?? Array.Empty<string>();
+    var returnUrl   = Url.Action("Index", "Leads", new { status, q = query, page });
+}
+
+<!-- ===== Stat widgets ===== -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-primary"><i class="bi bi-inbox"></i></div>
+            <div>
+                <div class="stat-label">Total Leads</div>
+                <div class="stat-value">@ViewBag.TotalLeads</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-success"><i class="bi bi-stars"></i></div>
+            <div>
+                <div class="stat-label">New</div>
+                <div class="stat-value">@ViewBag.NewLeads</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-warning"><i class="bi bi-envelope-paper"></i></div>
+            <div>
+                <div class="stat-label">Unread</div>
+                <div class="stat-value">@ViewBag.UnreadLeads</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-info"><i class="bi bi-check2-circle"></i></div>
+            <div>
+                <div class="stat-label">Closed</div>
+                <div class="stat-value">@ViewBag.ClosedLeads</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Filters ===== -->
+<div class="content-card mb-3">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-md-5">
+            <label class="form-label fw-medium small">Search</label>
+            <input name="q" value="@query" class="form-control" placeholder="name, email, company, phone, message…" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-medium small">Status</label>
+            <select name="status" class="form-select">
+                <option value="">All statuses</option>
+                @foreach (var s in statuses)
+                {
+                    <option value="@s" selected="@(s == status)">@s</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-outline-primary w-100">
+                <i class="bi bi-funnel"></i> Filter
+            </button>
+        </div>
+        <div class="col-md-2 text-md-end">
+            <span class="text-muted small">@total result(s)</span>
+        </div>
+    </form>
+</div>
+
+<!-- ===== Table ===== -->
+<div class="content-card p-0">
+    <div class="d-flex align-items-center justify-content-between p-3 border-bottom">
+        <h6 class="mb-0">All Requests</h6>
+        <a asp-controller="Home" asp-action="Index" asp-fragment="contact" target="_blank" class="small text-decoration-none">
+            <i class="bi bi-box-arrow-up-right"></i> View public form
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-inbox text-muted"></i>
+            <h6 class="mt-3">No leads match this filter</h6>
+            <p class="text-muted small mb-0">Leads submitted from the public form will appear here.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle data-table mb-0 leads-table">
+                <thead>
+                    <tr>
+                        <th style="width: 36px;"></th>
+                        <th>Contact</th>
+                        <th>Service · Budget</th>
+                        <th>Message</th>
+                        <th style="width: 150px;">Status</th>
+                        <th style="width: 140px;">Received</th>
+                        <th style="width: 130px;" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var l in Model)
+                {
+                    <tr class="@(l.IsRead ? "" : "lead-unread")">
+                        <td>
+                            <span class="lead-unread-dot" title="@(l.IsRead ? "Read" : "Unread")"></span>
+                        </td>
+                        <td>
+                            <div class="fw-medium">@l.FullName</div>
+                            <div class="text-muted small">
+                                <a href="mailto:@l.Email" class="text-muted">@l.Email</a>
+                            </div>
+                            @if (!string.IsNullOrEmpty(l.CompanyName))
+                            {
+                                <div class="text-muted small">@l.CompanyName</div>
+                            }
+                        </td>
+                        <td>
+                            <div class="small">@(l.ServiceType ?? "—")</div>
+                            <div class="text-muted small">@(l.Budget ?? "")</div>
+                        </td>
+                        <td class="text-muted small text-truncate" style="max-width:320px;">@l.Message</td>
+                        <td>
+                            <div class="lead-status-badge @LeadStatus.CssClass(l.Status)">@l.Status</div>
+                        </td>
+                        <td class="text-muted small">
+                            @l.CreatedAt.ToString("MMM dd, yyyy")
+                            <div class="text-muted small">@l.CreatedAt.ToString("HH:mm")</div>
+                        </td>
+                        <td class="text-end">
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-primary lead-view-btn"
+                                    data-lead-id="@l.Id"
+                                    title="View details">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <form asp-action="Delete" method="post" class="d-inline confirm-delete" data-confirm="Delete this lead?">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@l.Id" />
+                                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                <button class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+        @if (totalPages > 1)
+        {
+            <nav class="pager p-3">
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <a class="pager-link @(i == page ? "active" : "")"
+                       href="?page=@i&status=@status&q=@Uri.EscapeDataString(query ?? string.Empty)">@i</a>
+                }
+            </nav>
+        }
+    }
+</div>
+
+<!-- ===== Details modal ===== -->
+<div class="modal fade lead-details-modal" id="leadDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-0"><span id="leadHeaderName">Lead</span></h5>
+                    <small class="text-muted" id="leadHeaderDate"></small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row g-3 lead-detail-grid">
+                    <div class="col-md-6">
+                        <div class="detail-label">Email</div>
+                        <div class="detail-value">
+                            <a id="leadEmail" href="#">—</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary copy-detail" data-target="#leadEmail" title="Copy"><i class="bi bi-clipboard"></i></button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-label">Phone</div>
+                        <div class="detail-value">
+                            <a id="leadPhone" href="#">—</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary copy-detail" data-target="#leadPhone"><i class="bi bi-clipboard"></i></button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-label">WhatsApp</div>
+                        <div class="detail-value">
+                            <a id="leadWhatsApp" href="#" target="_blank" rel="noopener">—</a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-label">Company</div>
+                        <div class="detail-value" id="leadCompany">—</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-label">Service</div>
+                        <div class="detail-value" id="leadService">—</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-label">Budget</div>
+                        <div class="detail-value" id="leadBudget">—</div>
+                    </div>
+                    <div class="col-12">
+                        <div class="detail-label">Message</div>
+                        <div class="detail-value detail-message" id="leadMessage">—</div>
+                    </div>
+                    <div class="col-12" id="leadAttachmentRow" style="display:none;">
+                        <div class="detail-label">Attachment</div>
+                        <div class="detail-value">
+                            <a id="leadAttachment" href="#" target="_blank" rel="noopener" class="lead-attachment">
+                                <i class="bi bi-paperclip"></i> <span id="leadAttachmentName">file</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <form asp-action="ChangeStatus" method="post" class="d-flex gap-2 align-items-center me-auto">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="leadIdInput" />
+                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+                    <label class="form-label mb-0 small text-muted">Status</label>
+                    <select name="status" id="leadStatusSelect" class="form-select form-select-sm">
+                        @foreach (var s in statuses)
+                        { <option value="@s">@s</option> }
+                    </select>
+                    <button class="btn btn-sm btn-gradient"><i class="bi bi-check-lg"></i> Update</button>
+                </form>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const modalEl = document.getElementById('leadDetailsModal');
+            if (!modalEl || typeof bootstrap === 'undefined') return;
+            const modal = new bootstrap.Modal(modalEl);
+
+            const fields = {
+                name:           document.getElementById('leadHeaderName'),
+                date:           document.getElementById('leadHeaderDate'),
+                email:          document.getElementById('leadEmail'),
+                phone:          document.getElementById('leadPhone'),
+                whatsApp:       document.getElementById('leadWhatsApp'),
+                company:        document.getElementById('leadCompany'),
+                service:        document.getElementById('leadService'),
+                budget:         document.getElementById('leadBudget'),
+                message:        document.getElementById('leadMessage'),
+                attachRow:      document.getElementById('leadAttachmentRow'),
+                attachLink:     document.getElementById('leadAttachment'),
+                attachName:     document.getElementById('leadAttachmentName'),
+                idInput:        document.getElementById('leadIdInput'),
+                statusSelect:   document.getElementById('leadStatusSelect'),
+            };
+
+            document.querySelectorAll('.lead-view-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const id = btn.getAttribute('data-lead-id');
+                    try {
+                        const res = await fetch('/Leads/Details/' + id, { headers: { 'Accept': 'application/json' } });
+                        if (!res.ok) throw new Error('Not found');
+                        const lead = await res.json();
+
+                        fields.name.textContent       = lead.fullName || 'Lead';
+                        fields.date.textContent       = lead.createdAt || '';
+                        fields.email.textContent      = lead.email || '—';
+                        fields.email.href             = lead.email ? 'mailto:' + lead.email : '#';
+                        fields.phone.textContent      = lead.phoneNumber || '—';
+                        fields.phone.href             = lead.phoneNumber ? 'tel:' + lead.phoneNumber : '#';
+                        if (lead.whatsAppNumber) {
+                            const num = lead.whatsAppNumber.replace(/[^0-9]/g, '');
+                            fields.whatsApp.textContent = lead.whatsAppNumber;
+                            fields.whatsApp.href = 'https://wa.me/' + num;
+                        } else {
+                            fields.whatsApp.textContent = '—';
+                            fields.whatsApp.href = '#';
+                        }
+                        fields.company.textContent  = lead.companyName || '—';
+                        fields.service.textContent  = lead.serviceType || '—';
+                        fields.budget.textContent   = lead.budget || '—';
+                        fields.message.textContent  = lead.message || '';
+
+                        if (lead.attachmentUrl) {
+                            fields.attachRow.style.display = '';
+                            fields.attachLink.href = lead.attachmentUrl;
+                            fields.attachName.textContent = lead.attachmentName || 'attachment';
+                        } else {
+                            fields.attachRow.style.display = 'none';
+                        }
+
+                        fields.idInput.value = lead.id;
+                        if (fields.statusSelect) fields.statusSelect.value = lead.status;
+
+                        // Mark the row as read visually
+                        const row = btn.closest('tr');
+                        if (row) row.classList.remove('lead-unread');
+
+                        modal.show();
+                    } catch (e) {
+                        console.error(e);
+                    }
+                });
+            });
+
+            document.body.addEventListener('click', e => {
+                const btn = e.target.closest('.copy-detail');
+                if (!btn) return;
+                const target = document.querySelector(btn.getAttribute('data-target'));
+                if (!target) return;
+                const text = target.textContent.trim();
+                if (text && navigator.clipboard) navigator.clipboard.writeText(text);
+            });
+        })();
+    </script>
+}

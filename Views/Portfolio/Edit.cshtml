@@ -1,0 +1,7 @@
+@model PortfolioItem
+@{
+    ViewData["Title"] = "Edit Project";
+}
+<form asp-action="Edit" method="post" enctype="multipart/form-data" class="content-card">
+    @await Html.PartialAsync("_Form", Model)
+</form>

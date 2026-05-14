@@ -1,0 +1,99 @@
+@model List<PortfolioItem>
+@{
+    ViewData["Title"] = "Portfolio";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h5 class="mb-0">All Projects</h5>
+        <small class="text-muted">@Model.Count total · featured projects appear first on the public site</small>
+    </div>
+    <a asp-action="Create" class="btn btn-gradient">
+        <i class="bi bi-plus-lg"></i> New Project
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state content-card">
+        <i class="bi bi-collection text-muted"></i>
+        <h6 class="mt-3">No projects yet</h6>
+        <p class="text-muted small mb-0">Add your first project from the button above.</p>
+    </div>
+}
+else
+{
+    <div class="portfolio-admin-grid">
+        @foreach (var p in Model)
+        {
+            <div class="portfolio-admin-card">
+                <div class="portfolio-admin-thumb">
+                    @if (!string.IsNullOrEmpty(p.ThumbnailUrl))
+                    {
+                        <img src="@p.ThumbnailUrl" alt="@p.TitleEn" />
+                    }
+                    else
+                    {
+                        <div class="thumb-fallback"><i class="bi bi-image"></i></div>
+                    }
+                    @if (p.IsFeatured)
+                    {
+                        <span class="badge-featured"><i class="bi bi-star-fill"></i> Featured</span>
+                    }
+                </div>
+                <div class="portfolio-admin-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="fw-bold">@p.TitleEn</div>
+                            <div class="text-muted small" dir="rtl">@p.TitleAr</div>
+                        </div>
+                        <form asp-action="ToggleActive" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@p.Id" />
+                            <button class="status-pill @(p.IsActive ? "is-on" : "is-off")">
+                                <span class="dot"></span> @(p.IsActive ? "Active" : "Hidden")
+                            </button>
+                        </form>
+                    </div>
+
+                    @if (p.TechList.Any())
+                    {
+                        <div class="tech-chips mt-2">
+                            @foreach (var t in p.TechList) { <span class="chip">@t</span> }
+                        </div>
+                    }
+
+                    <div class="d-flex gap-2 mt-3">
+                        <form asp-action="ToggleFeatured" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@p.Id" />
+                            <button class="btn btn-sm btn-outline-warning" title="Toggle featured">
+                                <i class="bi @(p.IsFeatured ? "bi-star-fill" : "bi-star")"></i>
+                            </button>
+                        </form>
+                        <form asp-action="Reorder" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@p.Id" />
+                            <input type="hidden" name="direction" value="-1" />
+                            <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-up"></i></button>
+                        </form>
+                        <form asp-action="Reorder" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@p.Id" />
+                            <input type="hidden" name="direction" value="1" />
+                            <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-down"></i></button>
+                        </form>
+                        <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-outline-primary ms-auto">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form asp-action="Delete" method="post" class="confirm-delete" data-confirm="Delete @p.TitleEn?">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@p.Id" />
+                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

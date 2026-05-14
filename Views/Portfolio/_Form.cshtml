@@ -1,0 +1,75 @@
+@model PortfolioItem
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger" style="display:@(ViewData.ModelState.IsValid ? "none" : "block")"></div>
+<input type="hidden" asp-for="Id" />
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="TitleEn" class="form-label fw-medium">Title (English)</label>
+        <input asp-for="TitleEn" class="form-control" required maxlength="150" />
+    </div>
+    <div class="col-md-6">
+        <label asp-for="TitleAr" class="form-label fw-medium">Title (Arabic)</label>
+        <input asp-for="TitleAr" class="form-control" dir="rtl" required maxlength="150" />
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="DescriptionEn" class="form-label fw-medium">Description (English)</label>
+        <textarea asp-for="DescriptionEn" class="form-control" rows="5" maxlength="1000"></textarea>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="DescriptionAr" class="form-label fw-medium">Description (Arabic)</label>
+        <textarea asp-for="DescriptionAr" class="form-control" rows="5" dir="rtl" maxlength="1000"></textarea>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Technologies" class="form-label fw-medium">Technologies</label>
+        <input asp-for="Technologies" class="form-control" placeholder=".NET, SQL Server, Azure" />
+        <small class="form-text text-muted">Comma-separated</small>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="ProjectUrl" class="form-label fw-medium">Project URL</label>
+        <input asp-for="ProjectUrl" class="form-control" placeholder="https://..." />
+    </div>
+
+    <div class="col-12">
+        <label class="form-label fw-medium">Thumbnail</label>
+        @if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
+        {
+            <div class="image-preview-lg mb-2"><img src="@Model.ThumbnailUrl" alt="" /></div>
+        }
+        <div class="input-group">
+            <input asp-for="ThumbnailUrl" class="form-control" placeholder="/uploads/media/portfolio/..." />
+            <button type="button" class="btn btn-outline-secondary" data-media-picker data-media-target="#ThumbnailUrl" data-media-category="portfolio">
+                <i class="bi bi-images"></i> Library
+            </button>
+        </div>
+        <input type="file" name="thumbnailFile" class="form-control mt-2" accept="image/*" />
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="DisplayOrder" class="form-label fw-medium">Display Order</label>
+        <input asp-for="DisplayOrder" type="number" class="form-control" min="0" />
+    </div>
+
+    <div class="col-md-3 d-flex align-items-end">
+        <div class="form-check form-switch">
+            <input asp-for="IsFeatured" class="form-check-input" type="checkbox" role="switch" />
+            <label asp-for="IsFeatured" class="form-check-label">Featured</label>
+        </div>
+    </div>
+
+    <div class="col-md-3 d-flex align-items-end">
+        <div class="form-check form-switch">
+            <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch" />
+            <label asp-for="IsActive" class="form-check-label">Active</label>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex gap-2 sticky-bottom-bar">
+    <button type="submit" class="btn btn-gradient">
+        <i class="bi bi-check-lg"></i> Save Project
+    </button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+</div>

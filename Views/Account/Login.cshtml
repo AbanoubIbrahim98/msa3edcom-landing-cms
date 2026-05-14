@@ -1,0 +1,110 @@
+@model LoginViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Login — msa3edcom</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background:
+              radial-gradient(circle at 20% 20%, rgba(99,102,241,0.18), transparent 50%),
+              radial-gradient(circle at 80% 80%, rgba(168,85,247,0.18), transparent 50%),
+              #F7F8FC;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .login-card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 24px 60px rgba(11,20,55,0.12);
+            border: 1px solid rgba(15,23,42,0.06);
+        }
+        .brand-mark {
+            width: 56px; height: 56px;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, #6366F1, #A855F7);
+            border-radius: 14px;
+            color: #fff;
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #6366F1, #A855F7);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-weight: 600;
+            border-radius: 12px;
+            box-shadow: 0 10px 24px -10px rgba(99,102,241,0.6);
+        }
+        .btn-gradient:hover {
+            color: #fff;
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+        }
+        .form-control:focus {
+            border-color: #6366F1;
+            box-shadow: 0 0 0 0.2rem rgba(99,102,241,0.18);
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width: 460px;">
+        <div class="login-card p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="brand-mark mb-3">
+                    <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
+                        <path d="M10 28V14l6 8 6-8v14M24 28V14l6 14" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3 class="mb-1 fw-bold">Admin Login</h3>
+                <p class="text-muted small mb-0">Sign in to manage msa3edcom site content</p>
+            </div>
+
+            <form asp-action="Login" method="post" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger small py-2"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label fw-medium">Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-envelope text-muted"></i></span>
+                        <input asp-for="Email" class="form-control" autofocus autocomplete="username" />
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label fw-medium">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-lock text-muted"></i></span>
+                        <input asp-for="Password" class="form-control" autocomplete="current-password" />
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <label asp-for="RememberMe" class="form-check-label small">Keep me signed in</label>
+                </div>
+
+                <button type="submit" class="btn btn-gradient w-100">
+                    <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <a href="/" class="text-muted small text-decoration-none">
+                    <i class="bi bi-arrow-left"></i> Back to website
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

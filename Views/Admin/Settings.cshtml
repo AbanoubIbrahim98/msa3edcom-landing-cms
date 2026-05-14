@@ -1,0 +1,361 @@
+@model SiteContent
+@{
+    ViewData["Title"] = "Site Content";
+}
+
+<form asp-action="Settings" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="display:@(ViewData.ModelState.IsValid ? "none" : "block")"></div>
+
+    <!-- ============ General ============ -->
+    <div class="content-card mb-4">
+        <div class="d-flex align-items-center mb-3">
+            <span class="card-icon"><i class="bi bi-gear"></i></span>
+            <div>
+                <h5 class="mb-0">General</h5>
+                <small class="text-muted">Logo, contact info, address, social links</small>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label fw-medium">Logo (light)</label>
+                @if (!string.IsNullOrEmpty(Model.LogoUrl))
+                { <div class="image-preview mb-2"><img src="@Model.LogoUrl" alt="" /></div> }
+                <div class="input-group">
+                    <input asp-for="LogoUrl" class="form-control" placeholder="/uploads/media/logos/..." />
+                    <button type="button" class="btn btn-outline-secondary" data-media-picker data-media-target="#LogoUrl" data-media-category="logos">
+                        <i class="bi bi-images"></i>
+                    </button>
+                </div>
+                <input type="file" name="logoFile" class="form-control mt-2" accept="image/*" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-medium">Logo (dark)</label>
+                @if (!string.IsNullOrEmpty(Model.LogoDarkUrl))
+                { <div class="image-preview mb-2"><img src="@Model.LogoDarkUrl" alt="" /></div> }
+                <div class="input-group">
+                    <input asp-for="LogoDarkUrl" class="form-control" placeholder="/uploads/media/logos/..." />
+                    <button type="button" class="btn btn-outline-secondary" data-media-picker data-media-target="#LogoDarkUrl" data-media-category="logos">
+                        <i class="bi bi-images"></i>
+                    </button>
+                </div>
+                <input type="file" name="logoDarkFile" class="form-control mt-2" accept="image/*" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-medium">Favicon</label>
+                @if (!string.IsNullOrEmpty(Model.FaviconUrl))
+                { <div class="image-preview mb-2"><img src="@Model.FaviconUrl" alt="" /></div> }
+                <div class="input-group">
+                    <input asp-for="FaviconUrl" class="form-control" placeholder="/uploads/media/logos/..." />
+                    <button type="button" class="btn btn-outline-secondary" data-media-picker data-media-target="#FaviconUrl" data-media-category="logos">
+                        <i class="bi bi-images"></i>
+                    </button>
+                </div>
+                <input type="file" name="faviconFile" class="form-control mt-2" accept="image/*" />
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="Phone" class="form-label fw-medium">Phone</label>
+                <input asp-for="Phone" class="form-control" placeholder="+965 6100 1089" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="WhatsApp" class="form-label fw-medium">WhatsApp</label>
+                <input asp-for="WhatsApp" class="form-control" placeholder="+965 6100 1089" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Email" class="form-label fw-medium">Email</label>
+                <input asp-for="Email" class="form-control" type="email" />
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Address" class="form-label fw-medium">Address</label>
+                <input asp-for="Address" class="form-control" placeholder="Kuwait City, Kuwait" />
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="FooterTextEn" class="form-label fw-medium">Footer (EN)</label>
+                <input asp-for="FooterTextEn" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="FooterTextAr" class="form-label fw-medium">Footer (AR)</label>
+                <input asp-for="FooterTextAr" class="form-control" dir="rtl" />
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="LinkedInUrl" class="form-label fw-medium"><i class="bi bi-linkedin me-1"></i> LinkedIn</label>
+                <input asp-for="LinkedInUrl" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="TwitterUrl" class="form-label fw-medium"><i class="bi bi-twitter-x me-1"></i> X / Twitter</label>
+                <input asp-for="TwitterUrl" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="GitHubUrl" class="form-label fw-medium"><i class="bi bi-github me-1"></i> GitHub</label>
+                <input asp-for="GitHubUrl" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="InstagramUrl" class="form-label fw-medium"><i class="bi bi-instagram me-1"></i> Instagram</label>
+                <input asp-for="InstagramUrl" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="FacebookUrl" class="form-label fw-medium"><i class="bi bi-facebook me-1"></i> Facebook</label>
+                <input asp-for="FacebookUrl" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ Hero ============ -->
+    <div class="content-card mb-4">
+        <div class="d-flex align-items-center mb-3">
+            <span class="card-icon"><i class="bi bi-stars"></i></span>
+            <div>
+                <h5 class="mb-0">Hero Section</h5>
+                <small class="text-muted">Eyebrow, title, subtitle, primary/secondary CTAs, image</small>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="HeroEyebrowEn" class="form-label fw-medium">Eyebrow (EN)</label>
+                <input asp-for="HeroEyebrowEn" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="HeroEyebrowAr" class="form-label fw-medium">Eyebrow (AR)</label>
+                <input asp-for="HeroEyebrowAr" class="form-control" dir="rtl" />
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="HeroTitleEn" class="form-label fw-medium">Title (EN)</label>
+                <input asp-for="HeroTitleEn" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="HeroTitleAr" class="form-label fw-medium">Title (AR)</label>
+                <input asp-for="HeroTitleAr" class="form-control" dir="rtl" />
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="HeroSubtitleEn" class="form-label fw-medium">Subtitle (EN)</label>
+                <textarea asp-for="HeroSubtitleEn" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="HeroSubtitleAr" class="form-label fw-medium">Subtitle (AR)</label>
+                <textarea asp-for="HeroSubtitleAr" class="form-control" rows="3" dir="rtl"></textarea>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="HeroPrimaryCtaTextEn" class="form-label fw-medium">Primary CTA (EN)</label>
+                <input asp-for="HeroPrimaryCtaTextEn" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="HeroPrimaryCtaTextAr" class="form-label fw-medium">Primary CTA (AR)</label>
+                <input asp-for="HeroPrimaryCtaTextAr" class="form-control" dir="rtl" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="HeroPrimaryCtaUrl" class="form-label fw-medium">Primary CTA URL</label>
+                <input asp-for="HeroPrimaryCtaUrl" class="form-control" placeholder="#contact" />
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="HeroSecondaryCtaTextEn" class="form-label fw-medium">Secondary CTA (EN)</label>
+                <input asp-for="HeroSecondaryCtaTextEn" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="HeroSecondaryCtaTextAr" class="form-label fw-medium">Secondary CTA (AR)</label>
+                <input asp-for="HeroSecondaryCtaTextAr" class="form-control" dir="rtl" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="HeroSecondaryCtaUrl" class="form-label fw-medium">Secondary CTA URL</label>
+                <input asp-for="HeroSecondaryCtaUrl" class="form-control" placeholder="#portfolio" />
+            </div>
+
+            <div class="col-12">
+                <label class="form-label fw-medium">Hero Image</label>
+                @if (!string.IsNullOrEmpty(Model.HeroImageUrl))
+                { <div class="image-preview-lg mb-2"><img src="@Model.HeroImageUrl" alt="" /></div> }
+                <div class="input-group">
+                    <input asp-for="HeroImageUrl" class="form-control" placeholder="/uploads/media/hero/..." />
+                    <button type="button" class="btn btn-outline-secondary" data-media-picker data-media-target="#HeroImageUrl" data-media-category="hero">
+                        <i class="bi bi-images"></i> Library
+                    </button>
+                </div>
+                <input type="file" name="heroImageFile" class="form-control mt-2" accept="image/*" />
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ About ============ -->
+    <div class="content-card mb-4">
+        <div class="d-flex align-items-center mb-3">
+            <span class="card-icon"><i class="bi bi-info-circle"></i></span>
+            <div>
+                <h5 class="mb-0">About Section</h5>
+                <small class="text-muted">Story, image, supporting copy</small>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="AboutTitleEn" class="form-label fw-medium">Title (EN)</label>
+                <input asp-for="AboutTitleEn" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="AboutTitleAr" class="form-label fw-medium">Title (AR)</label>
+                <input asp-for="AboutTitleAr" class="form-control" dir="rtl" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="AboutTextEn" class="form-label fw-medium">Text (EN)</label>
+                <textarea asp-for="AboutTextEn" class="form-control" rows="6"></textarea>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="AboutTextAr" class="form-label fw-medium">Text (AR)</label>
+                <textarea asp-for="AboutTextAr" class="form-control" rows="6" dir="rtl"></textarea>
+            </div>
+            <div class="col-12">
+                <label class="form-label fw-medium">About Image</label>
+                @if (!string.IsNullOrEmpty(Model.AboutImageUrl))
+                { <div class="image-preview-lg mb-2"><img src="@Model.AboutImageUrl" alt="" /></div> }
+                <div class="input-group">
+                    <input asp-for="AboutImageUrl" class="form-control" placeholder="/uploads/media/about/..." />
+                    <button type="button" class="btn btn-outline-secondary" data-media-picker data-media-target="#AboutImageUrl" data-media-category="about">
+                        <i class="bi bi-images"></i> Library
+                    </button>
+                </div>
+                <input type="file" name="aboutImageFile" class="form-control mt-2" accept="image/*" />
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ Section headers ============ -->
+    <div class="content-card mb-4">
+        <div class="d-flex align-items-center mb-3">
+            <span class="card-icon"><i class="bi bi-fonts"></i></span>
+            <div>
+                <h5 class="mb-0">Section Headlines</h5>
+                <small class="text-muted">Services and Portfolio section copy</small>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="ServicesTitleEn" class="form-label fw-medium">Services title (EN)</label>
+                <input asp-for="ServicesTitleEn" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="ServicesTitleAr" class="form-label fw-medium">Services title (AR)</label>
+                <input asp-for="ServicesTitleAr" class="form-control" dir="rtl" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="ServicesLeadEn" class="form-label fw-medium">Services lead (EN)</label>
+                <textarea asp-for="ServicesLeadEn" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="ServicesLeadAr" class="form-label fw-medium">Services lead (AR)</label>
+                <textarea asp-for="ServicesLeadAr" class="form-control" rows="2" dir="rtl"></textarea>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="PortfolioTitleEn" class="form-label fw-medium">Portfolio title (EN)</label>
+                <input asp-for="PortfolioTitleEn" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="PortfolioTitleAr" class="form-label fw-medium">Portfolio title (AR)</label>
+                <input asp-for="PortfolioTitleAr" class="form-control" dir="rtl" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="PortfolioLeadEn" class="form-label fw-medium">Portfolio lead (EN)</label>
+                <textarea asp-for="PortfolioLeadEn" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="PortfolioLeadAr" class="form-label fw-medium">Portfolio lead (AR)</label>
+                <textarea asp-for="PortfolioLeadAr" class="form-control" rows="2" dir="rtl"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ CTA Banner ============ -->
+    <div class="content-card mb-4">
+        <div class="d-flex align-items-center mb-3">
+            <span class="card-icon"><i class="bi bi-megaphone"></i></span>
+            <div>
+                <h5 class="mb-0">CTA Banner</h5>
+                <small class="text-muted">A wide call-to-action shown before the footer</small>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="CtaBannerTitleEn" class="form-label fw-medium">Title (EN)</label>
+                <input asp-for="CtaBannerTitleEn" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="CtaBannerTitleAr" class="form-label fw-medium">Title (AR)</label>
+                <input asp-for="CtaBannerTitleAr" class="form-control" dir="rtl" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="CtaBannerSubtitleEn" class="form-label fw-medium">Subtitle (EN)</label>
+                <textarea asp-for="CtaBannerSubtitleEn" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="CtaBannerSubtitleAr" class="form-label fw-medium">Subtitle (AR)</label>
+                <textarea asp-for="CtaBannerSubtitleAr" class="form-control" rows="2" dir="rtl"></textarea>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="CtaBannerButtonTextEn" class="form-label fw-medium">Button text (EN)</label>
+                <input asp-for="CtaBannerButtonTextEn" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="CtaBannerButtonTextAr" class="form-label fw-medium">Button text (AR)</label>
+                <input asp-for="CtaBannerButtonTextAr" class="form-control" dir="rtl" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="CtaBannerButtonUrl" class="form-label fw-medium">Button URL</label>
+                <input asp-for="CtaBannerButtonUrl" class="form-control" placeholder="#contact" />
+            </div>
+            <div class="col-12">
+                <label class="form-label fw-medium">Background Image</label>
+                @if (!string.IsNullOrEmpty(Model.CtaBannerImageUrl))
+                { <div class="image-preview-lg mb-2"><img src="@Model.CtaBannerImageUrl" alt="" /></div> }
+                <div class="input-group">
+                    <input asp-for="CtaBannerImageUrl" class="form-control" placeholder="/uploads/media/backgrounds/..." />
+                    <button type="button" class="btn btn-outline-secondary" data-media-picker data-media-target="#CtaBannerImageUrl" data-media-category="backgrounds">
+                        <i class="bi bi-images"></i> Library
+                    </button>
+                </div>
+                <input type="file" name="ctaBannerImageFile" class="form-control mt-2" accept="image/*" />
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2 sticky-bottom-bar">
+        <button type="submit" class="btn btn-gradient">
+            <i class="bi bi-check-lg"></i> Save All Changes
+        </button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        // Live preview for image inputs
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+            input.addEventListener('change', e => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    let preview = input.previousElementSibling;
+                    if (!preview || !preview.classList.contains('image-preview-live')) {
+                        preview = document.createElement('div');
+                        preview.classList.add('image-preview-live', 'mb-2');
+                        preview.innerHTML = '<img style="max-height:120px; border-radius:8px;" />';
+                        input.parentNode.insertBefore(preview, input);
+                    }
+                    preview.querySelector('img').src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    </script>
+}

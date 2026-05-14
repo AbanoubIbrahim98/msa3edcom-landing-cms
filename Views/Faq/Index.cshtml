@@ -1,0 +1,112 @@
+@model List<FaqItem>
+@{
+    ViewData["Title"] = "FAQ";
+}
+
+<div class="content-card mb-4">
+    <div class="d-flex align-items-center mb-3">
+        <span class="card-icon"><i class="bi bi-question-circle"></i></span>
+        <div>
+            <h5 class="mb-0">Add FAQ Item</h5>
+            <small class="text-muted">Questions answered on the public site</small>
+        </div>
+    </div>
+
+    <form asp-action="Save" method="post" class="row g-3">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="Id" value="0" />
+
+        <div class="col-md-6">
+            <label class="form-label fw-medium">Question (English)</label>
+            <input name="QuestionEn" class="form-control" required maxlength="300" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label fw-medium">Question (Arabic)</label>
+            <input name="QuestionAr" class="form-control" dir="rtl" required maxlength="300" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label fw-medium">Answer (English)</label>
+            <textarea name="AnswerEn" class="form-control" rows="3" required maxlength="2000"></textarea>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label fw-medium">Answer (Arabic)</label>
+            <textarea name="AnswerAr" class="form-control" rows="3" dir="rtl" required maxlength="2000"></textarea>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Order</label>
+            <input name="DisplayOrder" type="number" class="form-control" min="0" value="0" />
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <div class="form-check form-switch">
+                <input type="hidden" name="IsActive" value="false" />
+                <input class="form-check-input" type="checkbox" role="switch" name="IsActive" value="true" checked />
+                <label class="form-check-label">Active</label>
+            </div>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-gradient"><i class="bi bi-plus-lg"></i> Add FAQ</button>
+        </div>
+    </form>
+</div>
+
+<div class="content-card p-0">
+    <div class="d-flex align-items-center justify-content-between p-3 border-bottom">
+        <h6 class="mb-0">All FAQs</h6>
+        <small class="text-muted">@Model.Count total</small>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state"><i class="bi bi-question-circle text-muted"></i><h6 class="mt-3">No FAQs yet</h6></div>
+    }
+    else
+    {
+        <div class="accordion accordion-flush" id="adminFaq">
+            @foreach (var (f, idx) in Model.Select((x, i) => (x, i)))
+            {
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-@f.Id">
+                            <span class="me-2 small text-muted">#@f.DisplayOrder</span>
+                            <span class="fw-medium">@f.QuestionEn</span>
+                            @if (!f.IsActive) { <span class="badge bg-warning-subtle text-warning ms-2">Hidden</span> }
+                        </button>
+                    </h2>
+                    <div id="faq-@f.Id" class="accordion-collapse collapse" data-bs-parent="#adminFaq">
+                        <div class="accordion-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <small class="text-muted d-block mb-1">Question (AR)</small>
+                                    <div dir="rtl">@f.QuestionAr</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <small class="text-muted d-block mb-1">Answer (EN)</small>
+                                    <div>@f.AnswerEn</div>
+                                </div>
+                                <div class="col-12">
+                                    <small class="text-muted d-block mb-1">Answer (AR)</small>
+                                    <div dir="rtl">@f.AnswerAr</div>
+                                </div>
+                            </div>
+                            <div class="mt-3 d-flex gap-2">
+                                <form asp-action="ToggleActive" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@f.Id" />
+                                    <button class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi @(f.IsActive ? "bi-eye-slash" : "bi-eye")"></i>
+                                        @(f.IsActive ? "Hide" : "Show")
+                                    </button>
+                                </form>
+                                <form asp-action="Delete" method="post" class="confirm-delete" data-confirm="Delete this FAQ?">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@f.Id" />
+                                    <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,7 @@
+@model ServiceItem
+@{
+    ViewData["Title"] = "Edit Service";
+}
+<form asp-action="Edit" method="post" enctype="multipart/form-data" class="content-card">
+    @await Html.PartialAsync("_Form", Model)
+</form>
